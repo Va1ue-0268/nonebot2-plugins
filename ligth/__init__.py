@@ -110,7 +110,7 @@ async def set_light_on_cn_handle(bot: Bot, event: Event, state: T_State):
     set_light_on_cn.user_data = get_user_data()
     if set_light_on_cn.user_id not in set_light_on_cn.user_data:
         await set_light_on_cn.finish('你还没有注册哦')
-    default_location = set_light_off_cn.user_data[set_light_on_cn.user_id]['default']
+    default_location = set_light_on_cn.user_data[set_light_on_cn.user_id]['default']
     if command:
         set_light_on_cn.place = command[0]
         if set_light_on_cn.place not in set_light_on_cn.user_data[set_light_on_cn.user_id]['location']:
@@ -156,7 +156,7 @@ async def set_light_color_cn_handle(bot: Bot, event: Event, state: T_State):
     set_light_color_cn.user_id = str(event.user_id)
     set_light_color_cn.user_data = get_user_data()
     if set_light_color_cn.user_id not in set_light_color_cn.user_data:
-        await set_light_on_cn.finish('你还没有注册哦')
+        await set_light_color_cn.finish('你还没有注册哦')
     default_location = set_light_color_cn.user_data[set_light_color_cn.user_id]['default']
     if command:
         if command[0][0].isdigit() == 1:
@@ -171,7 +171,7 @@ async def set_light_color_cn_handle(bot: Bot, event: Event, state: T_State):
         else:
             set_light_color_cn.place = command[0]
             if set_light_color_cn.place not in set_light_color_cn.user_data[set_light_color_cn.user_id]['location']:
-                await set_light_on_cn.finish('没有这个位置哦')
+                await set_light_color_cn.finish('没有这个位置哦')
             if command[1][0].isdigit() == 1:
                 R = command[1]
                 G = command[2]
