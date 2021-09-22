@@ -14,25 +14,38 @@ t = 0
 
 #用来存储数据
 dict={}
+
+#以后用数据库，现在先用着
+user_json_path = '/home/qqbot/plugindata/light/user_data.json'
+data_path = '/home/download/esp/'
 #根据情况自己改
-school_json_path = '/home/download/esp/IR.html'
-home_json_path = '/home/download/esp/home/IR.html'
 IRData_path = '/home/qqbot/plugindata/light/IRData.json'
 
-async def reject(bot, event):
-    global t
-    t = t + 1
-    if t == 1:
-        await bot.send(event, message='这是主人才能碰的哦')
-    elif t == 2:
-        await bot.send(event, message='不听是吧？')
-        await bot.send(event, Message('[CQ:image,file=bc24e53cc970222a6617e4440a47e0f8.image]'))
-    elif t == 3:
-        await bot.send(event, message='不理你了哦')
-    elif t == 4:
-        await bot.send(event, message='真的不理你了！哼！')
-    elif t == 7:
-        t = 0
+#根据ID位置生成路径
+def get_json_path(ID, location):
+    path = data_path + ID + "/" + location + "/light.json"
+    return path
+
+#获取用户信息
+def get_user_data():
+    global user_json_path
+    with open(user_json_path) as f:
+        params = json.load(f)
+    f.close()
+    return params
+
+#更改信息，key为关键词，value为值
+def change_user_data(ID, key, value):
+    global user_json_path
+    with open(user_json_path) as f:
+        params = json.load(f)
+    f.close()
+    params[ID][key] = value 
+    with open(user_json_path,'w+') as r:
+        tojson = json.dumps(params,sort_keys=False, ensure_ascii=False, indent=4,separators=(',',': '))
+        r.write(tojson)
+    r.close()
+    return params
 
 #获取json里面数据
 async def IR(json_path, command):
@@ -67,6 +80,27 @@ async def IR(json_path, command):
         r.write(tojson)
     r.close()
     return dict
+
+IR_control = on_command('IR', aliases=None)
+@IR_control.handle()
+async def IR_control_handle(bot: Bot, event: Event, state: T_State):
+    command = str(event.get_message()).split()
+    IR_control.user_id = str(event.user_id)
+    IR_control.user_data = get_user_data()
+    if IR_control.user_id not in IR_control.user_data:
+        await IR_control.finish('你还没有注册哦')
+    default_location = IR_control.user_data[IR_control.user_id]['default']
+    if command:
+        IR_control.place = command[0]
+        if IR_control.place not in IR_control.user_data[IR_control.user_id]['location']:
+            await IR_control.finish('没有这个位置哦')
+    else:
+        IR_control.place = default_location
+    json_path = get_json_path(IR_control.user_id, IR_control.place)
+    result = IR(json_path, R, G, B)
+    print(result)
+    await bot.send(event, message='开灯啦～')
+    await IR_control.finish()
 
 #位置还没和light使用同一种方法，有时间改
 IR_control = on_command('IR', aliases={'ir', '遥控'})
