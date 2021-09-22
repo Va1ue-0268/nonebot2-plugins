@@ -14,7 +14,7 @@ t = 0
 
 #用来存储数据
 dict={}
-
+#根据情况自己改
 school_json_path = '/home/download/esp/IR.html'
 home_json_path = '/home/download/esp/home/IR.html'
 IRData_path = '/home/qqbot/plugindata/light/IRData.json'
@@ -34,9 +34,8 @@ async def reject(bot, event):
     elif t == 7:
         t = 0
 
-
-async def IR(json_path, command):
 #获取json里面数据
+async def IR(json_path, command):
     #读取红外数据
     with open(IRData_path) as f:
             IRData = json.load(f)
@@ -69,7 +68,7 @@ async def IR(json_path, command):
     r.close()
     return dict
 
-
+#位置还没和light使用同一种方法，有时间改
 IR_control = on_command('IR', aliases={'ir', '遥控'})
 @IR_control.handle()
 async def IR_control_handle(bot: Bot, event: Event, state: T_State):

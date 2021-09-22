@@ -9,6 +9,7 @@ from nonebot.adapters.cqhttp.event import (Event, MessageEvent)
 from nonebot.adapters.cqhttp.message import Message
 from nonebot.typing import T_State
 
+#以后用数据库，现在先用着
 user_json_path = '/home/qqbot/plugindata/light/user_data.json'
 data_path = '/home/download/esp/'
 
@@ -18,10 +19,12 @@ t = 0
 #用来存储数据
 dict={}
 
+#默认配置
 default = {
     "default": "学校",
     "location": ["学校"]
 }
+
 default_light = {
     "state": 1,
     "red": 255,
@@ -29,21 +32,23 @@ default_light = {
     "blue": 160
 }
 
-async def reject(bot, event):
-    global t
-    t = t + 1
-    if t == 1:
-        await bot.send(event, message='这是主人才能碰的哦')
-    elif t == 2:
-        await bot.send(event, message='不听是吧？')
-        await bot.send(event, Message('[CQ:image,file=bc24e53cc970222a6617e4440a47e0f8.image]'))
-    elif t == 3:
-        await bot.send(event, message='不理你了哦')
-    elif t == 4:
-        await bot.send(event, message='真的不理你了！哼！')
-    elif t == 7:
-        t = 0
+###拒绝请求，已经不用了
+# async def reject(bot, event):
+#     global t
+#     t = t + 1
+#     if t == 1:
+#         await bot.send(event, message='这是主人才能碰的哦')
+#     elif t == 2:
+#         await bot.send(event, message='不听是吧？')
+#         await bot.send(event, Message('[CQ:image,file=bc24e53cc970222a6617e4440a47e0f8.image]'))
+#     elif t == 3:
+#         await bot.send(event, message='不理你了哦')
+#     elif t == 4:
+#         await bot.send(event, message='真的不理你了！哼！')
+#     elif t == 7:
+#         t = 0
 
+#开灯
 def light_on(json_path, R, G, B):
     with open(json_path) as f:
         params = json.load(f)
@@ -58,6 +63,7 @@ def light_on(json_path, R, G, B):
     r.close()
     return params
 
+#关灯
 def light_off(json_path):
     with open(json_path) as f:
         params = json.load(f)
@@ -69,10 +75,12 @@ def light_off(json_path):
     r.close()
     return params
 
+#根据ID位置生成路径
 def get_json_path(ID, location):
     path = data_path + ID + "/" + location + "/light.json"
     return path
 
+#获取用户信息
 def get_user_data():
     global user_json_path
     with open(user_json_path) as f:
@@ -80,6 +88,7 @@ def get_user_data():
     f.close()
     return params
 
+#更改信息，key为关键词，value为值
 def change_user_data(ID, key, value):
     global user_json_path
     with open(user_json_path) as f:
@@ -92,6 +101,7 @@ def change_user_data(ID, key, value):
     r.close()
     return params
 
+#获取当前状态颜色
 def get_user_color(ID, location):
     global data_path
     path = data_path + ID + "/" + location + "/light.json"
@@ -100,6 +110,7 @@ def get_user_color(ID, location):
     f.close()
     return params
 
+#添加用户
 def add_user(ID):
     global user_json_path
     global default
@@ -122,6 +133,7 @@ def add_user(ID):
     r.close()
     return True
 
+#添加位置
 def add_location(ID, location):
     global user_json_path
     global data_path
@@ -143,6 +155,7 @@ def add_location(ID, location):
         r.write(tojson)
     r.close()
 
+#注册用户并生成文件
 register = on_command('注册')
 @register.handle()
 async def register_handle(bot: Bot, event: Event, state: T_State):
