@@ -159,17 +159,27 @@ async def set_light_color_cn_handle(bot: Bot, event: Event, state: T_State):
         await set_light_on_cn.finish('你还没有注册哦')
     default_location = set_light_color_cn.user_data[set_light_color_cn.user_id]['default']
     if command:
-        print(command[0][0])
         if command[0][0].isdigit() == 1:
             set_light_color_cn.place = default_location
-            set_light_color_cn.color = command[1:-1]
-            R = set_light_color_cn.color[0]
-            G = set_light_color_cn.color[1]
-            B = set_light_color_cn.color[2]
+            R = command[0]
+            G = command[1]
+            B = command[2]
+            json_path = get_json_path(set_light_color_cn.user_id, set_light_color_cn.place)
+            result = light_on(json_path, R, G, B)
+            print(result)
+            await set_light_color_cn.finish('调好啦～')
         else:
             set_light_color_cn.place = command[0]
             if set_light_color_cn.place not in set_light_color_cn.user_data[set_light_color_cn.user_id]['location']:
                 await set_light_on_cn.finish('没有这个位置哦')
+            if command[1][0].isdigit() == 1:
+                R = command[1]
+                G = command[2]
+                B = command[3]
+                json_path = get_json_path(set_light_color_cn.user_id, set_light_color_cn.place)
+                result = light_on(json_path, R, G, B)
+                print(result)
+                await set_light_color_cn.finish('调好啦～')
     else:
         set_light_color_cn.place = default_location
 
