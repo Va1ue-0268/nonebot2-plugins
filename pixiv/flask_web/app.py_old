@@ -1,5 +1,5 @@
+from aiohttp.client import request
 from flask import Flask
-from flask import request
 from pixivpy_async import AppPixivAPI
 from datetime import timedelta, datetime
 import requests
@@ -112,7 +112,7 @@ class pixiv:
         return pic_fin, author_fin, len(self.pic_user_works)
 
     #随机日榜
-    async def random(self, typ='day', t=1):
+    async def random(self, t, typ):
         pic = []
         author = []
         pic_fin = []
@@ -169,13 +169,7 @@ class pixiv:
 
 pixiv_api = pixiv()
 
-@app.route("/", methods=['GET', 'POST'])
+@app.route("/")
 async def get_data():
-    if request.method == 'GET':
-        typ = request.args.get("type")
-        print(typ)
-        data = await pixiv_api.random(typ)
-        return json.dumps(data)
-    else:
-        data = await pixiv_api.random(request.form['times'], 'day')
-        return json.dumps(data)
+    data = await pixiv_api.random(1, 'day')
+    return json.dumps(data)
