@@ -4,7 +4,7 @@ import random
 from pixivpy_async import AppPixivAPI
 import re
 
-_TOKEN = ""
+_TOKEN = "o-HYGiZqb_azny7RSwX7y2uy0Z0JVOu6WHUD9He9Vgk"
 
 class pixiv:
     def __init__(self):
@@ -15,8 +15,9 @@ class pixiv:
         self.pic_user_id = []
         self.pic_user_works = []
         self.pic_user_name = []
-        self.pic_today = {"day":[], "day_r18":[]}
-        self.author_today = {"day":[], "day_r18":[]}
+        self.pic_today = {"day":[], "week":[], "month":[], "day_male":[], "day_female":[], "week_original":[], "week_rookie":[], "day_r18":[], "day_male_r18":[], "day_female_r18":[], "week_r18":[], "week_r18g":[], "day_manga":[], "week_manga":[], "month_manga":[], "week_rookie_manga":[], "day_r18_manga":[], "week_r18_manga":[], "week_r18g_manga":[]}
+        self.author_today = {"day":[], "week":[], "month":[], "day_male":[], "day_female":[], "week_original":[], "week_rookie":[], "day_r18":[], "day_male_r18":[], "day_female_r18":[], "week_r18":[], "week_r18g":[], "day_manga":[], "week_manga":[], "month_manga":[], "week_rookie_manga":[], "day_r18_manga":[], "week_r18_manga":[], "week_r18g_manga":[]}
+
     
     #转换链接为原图
     def large_to_original (self, url):
