@@ -3,17 +3,20 @@ import os
 import random
 import time
 import sys
+import re
+from . import aiopic
 
 from nonebot import on_command, on_message
 from nonebot.adapters.cqhttp.bot import Bot
 from nonebot.adapters.cqhttp.event import Event, GroupMessageEvent,MessageEvent, PokeNotifyEvent
-from nonebot.adapters.cqhttp.message import Message
+from nonebot.adapters.cqhttp.message import Message, MessageSegment
 from nonebot.rule import to_me
 from nonebot.typing import T_State
 
 # -global- #
-repeat_stop = True
+repeat_stop = False
 trigger = {} #重复触发词判定
+last_msg = "" #不重复发一个消息
 data = {} #语料数据
 ptalk = {} #群回复率
 P = 1
@@ -22,6 +25,7 @@ filter_list = []
 
 gpath = '/home/qqbot/plugindata/chat'
 path = gpath +'/data.json'
+img_path = gpath + '/img'
 
 def union(gid, uid):
     return str((gid << 32) | uid)
@@ -56,7 +60,17 @@ async def chat_handle(bot: Bot, event: GroupMessageEvent):
     group_id = event.group_id
     user_id = event.user_id
     
+
+    if 'CQ:image' in message:
+        img_name = re.sub(']', '', message.split('=')[1])
+        img_url = await bot.get_image(file=img_name)
+        img_url = img_url['url']
+        img_name = re.sub('image', 'png', img_name)
+        img_name = img_path + '/' + img_name
+        result = await aiopic.get_pic(img_url, img_name)
+        print(result)
     global ptalk
+    global last_msg
     ptalk.setdefault(group_id,P)
     trigger.setdefault(group_id,' ')
    
@@ -72,11 +86,26 @@ async def chat_handle(bot: Bot, event: GroupMessageEvent):
                                 trigger[group_id] = i
                             print('ok')
                             #若消息不存在则删除
-                            try:
-                                msg = random.choice((data[id][i]))
-                                await bot.send(event,message=Message(msg))
-                            except:
-                                data[id][i].remove(msg)
+                            while True:
+                                try:
+                                    msg = ''.join(random.sample((data[id][i]), 1))
+                                    if msg == last_msg:
+                                        continue
+                                    try:
+                                        if 'image' in msg:
+                                            img_msg = img_path + '/' + re.sub(']', '', msg.split('=')[1])
+                                            img_msg = re.sub('image', 'png', img_msg)
+                                            img_msg = MessageSegment.image(f'file://{img_msg}')
+                                            await bot.send(event,message=img_msg)
+                                        else:
+                                            await bot.send(event,message=Message(msg))
+                                    except:
+                                        await bot.send(event,message=Message(msg))
+                                    last_msg = msg
+                                    break
+                                except:
+                                    print("delete ", msg)
+                                    data[id][i].remove(msg)
                             return
 
 
@@ -142,7 +171,14 @@ async def set_got2(bot: Bot, event: Event, state: T_State):
         else:
             try:
                 #录入库
-
+                if 'CQ:image' in state["value"]:
+                    img_name = re.sub(']', '', state["value"].split('=')[1])
+                    img_url = await bot.get_image(file=img_name)
+                    img_url = img_url['url']
+                    img_name = re.sub('image', 'png', img_name)
+                    img_name = img_path + '/' + img_name
+                    result = await aiopic.get_pic(img_url, img_name)
+                    print(result)
                 save_json(state["key"], state["value"], union(state['gid'] , 1))
                 await set_respond.finish(message='ok~')
             except:
