@@ -18,6 +18,8 @@ t = 0
 
 #用来存储数据
 dict={}
+user_id = 0
+place = ''
 
 
 
@@ -105,24 +107,25 @@ def get_user_color(ID, location):
 set_light_on_cn = on_command('开灯', aliases=None)
 @set_light_on_cn.handle()
 async def set_light_on_cn_handle(bot: Bot, event: Event, state: T_State):
+    global user_id, place
     command = str(event.get_message()).split()
-    set_light_on_cn.user_id = str(event.user_id)
-    set_light_on_cn.user_data = get_user_data()
-    if set_light_on_cn.user_id not in set_light_on_cn.user_data:
+    user_id = str(event.user_id)
+    user_data = get_user_data()
+    if user_id not in user_data:
         await set_light_on_cn.finish('你还没有注册哦')
-    default_location = set_light_on_cn.user_data[set_light_on_cn.user_id]['default']
+    default_location = user_data[user_id]['default']
     if command:
-        set_light_on_cn.place = command[0]
-        if set_light_on_cn.place not in set_light_on_cn.user_data[set_light_on_cn.user_id]['location']:
+        place = command[0]
+        if place not in user_data[user_id]['location']:
             await set_light_on_cn.finish('没有这个位置哦')
     else:
-        set_light_on_cn.place = default_location
-    color_data = get_user_color(set_light_on_cn.user_id, set_light_on_cn.place)
+        place = default_location
+    color_data = get_user_color(user_id, place)
     print(color_data)
     R = color_data['red']
     G = color_data['green']
     B = color_data['blue']
-    json_path = get_json_path(set_light_on_cn.user_id, set_light_on_cn.place)
+    json_path = get_json_path(user_id, place)
     result = light_on(json_path, R, G, B)
     print(result)
     await bot.send(event, message='开灯啦～')
@@ -131,19 +134,20 @@ async def set_light_on_cn_handle(bot: Bot, event: Event, state: T_State):
 set_light_off_cn = on_command('关灯', aliases=None)
 @set_light_off_cn.handle()
 async def set_light_off_cn_handle(bot: Bot, event: Event, state: T_State):
+    global user_id, place
     command = str(event.get_message()).split()
-    set_light_off_cn.user_id = str(event.user_id)
-    set_light_off_cn.user_data = get_user_data()
-    if set_light_off_cn.user_id not in set_light_off_cn.user_data:
+    user_id = str(event.user_id)
+    user_data = get_user_data()
+    if user_id not in user_data:
         await set_light_off_cn.finish('你还没有注册哦')
-    default_location = set_light_off_cn.user_data[set_light_off_cn.user_id]['default']
+    default_location = user_data[user_id]['default']
     if command:
-        set_light_off_cn.place = command[0]
-        if set_light_off_cn.place not in set_light_off_cn.user_data[set_light_off_cn.user_id]['location']:
+        place = command[0]
+        if place not in user_data[user_id]['location']:
             await set_light_off_cn.finish('没有这个位置哦')
     else:
-        set_light_off_cn.place = default_location
-    json_path = get_json_path(set_light_off_cn.user_id, set_light_off_cn.place)
+        place = default_location
+    json_path = get_json_path(user_id, place)
     result = light_off(json_path)
     print(result)
     await bot.send(event, message='关灯啦～')
@@ -152,45 +156,46 @@ async def set_light_off_cn_handle(bot: Bot, event: Event, state: T_State):
 set_light_color_cn = on_command('颜色', aliases=None)
 @set_light_color_cn.handle()
 async def set_light_color_cn_handle(bot: Bot, event: Event, state: T_State):
+    global user_id, place
     command = str(event.get_message()).split()
-    set_light_color_cn.user_id = str(event.user_id)
-    set_light_color_cn.user_data = get_user_data()
-    if set_light_color_cn.user_id not in set_light_color_cn.user_data:
+    user_id = str(event.user_id)
+    user_data = get_user_data()
+    if user_id not in user_data:
         await set_light_color_cn.finish('你还没有注册哦')
-    default_location = set_light_color_cn.user_data[set_light_color_cn.user_id]['default']
+    default_location = user_data[user_id]['default']
     if command:
         if command[0][0].isdigit() == 1:
-            set_light_color_cn.place = default_location
+            place = default_location
             R = command[0]
             G = command[1]
             B = command[2]
-            json_path = get_json_path(set_light_color_cn.user_id, set_light_color_cn.place)
+            json_path = get_json_path(user_id, place)
             result = light_on(json_path, R, G, B)
             print(result)
             await set_light_color_cn.finish('调好啦～')
         else:
-            set_light_color_cn.place = command[0]
-            if set_light_color_cn.place not in set_light_color_cn.user_data[set_light_color_cn.user_id]['location']:
+            place = command[0]
+            if place not in user_data[user_id]['location']:
                 await set_light_color_cn.finish('没有这个位置哦')
             if command[1][0].isdigit() == 1:
                 R = command[1]
                 G = command[2]
                 B = command[3]
-                json_path = get_json_path(set_light_color_cn.user_id, set_light_color_cn.place)
+                json_path = get_json_path(user_id, place)
                 result = light_on(json_path, R, G, B)
                 print(result)
                 await set_light_color_cn.finish('调好啦～')
     else:
-        set_light_color_cn.place = default_location
+        place = default_location
 
-@set_light_color_cn.got('set_light_color_cn.color', prompt="颜色是")
+@set_light_color_cn.got('color', prompt="颜色是")
 async def set_light_color_cn_got(bot: Bot, event: Event, state: T_State):
-    color = state['set_light_color_cn.color'].split()
+    color = state['color'].split()
     R = color[0]
     G = color[1]
     B = color[2]
     print(R, G, B)
-    json_path = get_json_path(set_light_color_cn.user_id, set_light_color_cn.place)
+    json_path = get_json_path(user_id, place)
     result = light_on(json_path, R, G, B)
     print(result)
     await set_light_color_cn.finish('调好啦～')

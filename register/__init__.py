@@ -9,6 +9,12 @@ from nonebot.adapters.cqhttp.event import (Event, MessageEvent)
 from nonebot.adapters.cqhttp.message import Message
 from nonebot.typing import T_State
 
+#global
+user_id = 0
+user_data = {}
+location = ''
+default_location = ''
+
 #以后用数据库，现在先用着
 user_json_path = '/home/qqbot/plugindata/light/user_data.json'
 data_path = '/home/download/esp/'
@@ -112,62 +118,64 @@ async def register_handle(bot: Bot, event: Event, state: T_State):
 set_default_location = on_command('默认位置', aliases=None)
 @set_default_location.handle()
 async def set_default_location_handle(bot: Bot, event: Event, state: T_State):
+    global user_id, user_data, default_location
     command = str(event.get_message()).split()
-    set_default_location.user_id = str(event.user_id)
-    set_default_location.user_data = get_user_data()
-    if set_default_location.user_id not in set_default_location.user_data:
+    user_id = str(event.user_id)
+    user_data = get_user_data()
+    if user_id not in user_data:
         await set_default_location.finish('你还没有注册哦')
-    set_default_location.default_location = set_default_location.user_data[set_default_location.user_id]['default']
+    default_location = user_data[user_id]['default']
     if command:
         if command[0][0].isdigit() == 0:
-            set_default_location.location = command[0]
-            print(set_default_location.location)
-            print(set_default_location.user_data[set_default_location.user_id]['location'])
-            if set_default_location.location not in set_default_location.user_data[set_default_location.user_id]['location']:
+            location = command[0]
+            print(location)
+            print(user_data[user_id]['location'])
+            if location not in user_data[user_id]['location']:
                 await set_default_location.finish('没有这个位置哦')
-            result = change_user_data(set_default_location.user_id, 'default', set_default_location.location)
+            result = change_user_data(user_id, 'default', location)
             print(result)
-            await set_default_location.finish('默认位置从 %s 改为 %s'%(set_default_location.default_location, set_default_location.location))
+            await set_default_location.finish('默认位置从 %s 改为 %s'%(default_location, location))
         else:
             await set_default_location.finish('位置开头不能为数字')
-@set_default_location.got('set_default_location.location', prompt="默认位置改为？")
+@set_default_location.got('location', prompt="默认位置改为？")
 async def set_default_location_got(bot: Bot, event: Event, state: T_State):
-    place = state['set_default_location.location'].split()
-    set_default_location.location = place[0]
-    if set_default_location.location[0][0].isdigit() == 0:
-        if set_default_location.location not in set_default_location.user_data[set_default_location.user_id]['location']:
+    place = state['location'].split()
+    location = place[0]
+    if location[0][0].isdigit() == 0:
+        if location not in user_data[user_id]['location']:
             await set_default_location.finish('没有这个位置哦')
-        result = change_user_data(set_default_location.user_id, 'default', set_default_location.location)
+        result = change_user_data(user_id, 'default', location)
         print(result)
-        await set_default_location.finish('默认位置从 %s 改为 %s'%(set_default_location.default_location, set_default_location.location))
+        await set_default_location.finish('默认位置从 %s 改为 %s'%(default_location, location))
     else:
         await set_default_location.finish('位置开头不能为数字')
 
 register_location = on_command('添加位置')
 @register_location.handle()
 async def register_location_handle(bot: Bot, event: Event, state: T_State):
+    global user_id, user_data
     command = str(event.get_message()).split()
-    register_location.user_id = str(event.user_id)
-    register_location.user_data = get_user_data()
-    if register_location.user_id not in register_location.user_data:
+    user_id = str(event.user_id)
+    user_data = get_user_data()
+    if user_id not in user_data:
         await register_location.finish('你还没有注册哦')
     if command:
         if command[0][0].isdigit() == 0:
-            register_location.location = command[0]
-            result = add_location(register_location.user_id, register_location.location)
+            location = command[0]
+            result = add_location(user_id, location)
             if result == 0:
                 await register_location.finish('位置已存在')
-            await register_location.finish('添加位置 %s'%(register_location.location))
+            await register_location.finish('添加位置 %s'%(location))
         else:
             await register_location.finish('位置开头不能为数字')
-@register_location.got('register_location.location', prompt="要添加什么位置呢")
+@register_location.got('location', prompt="要添加什么位置呢")
 async def register_location_got(bot: Bot, event: Event, state: T_State):
-    place = state['register_location.location'].split()
-    register_location.location = place[0]
-    if register_location.location[0][0].isdigit() == 0:
-        result = add_location(register_location.user_id, register_location.location)
+    place = state['location'].split()
+    location = place[0]
+    if location[0][0].isdigit() == 0:
+        result = add_location(user_id, location)
         if result == 0:
             await register_location.finish('位置已存在')
-        await register_location.finish('添加位置 %s'%(register_location.location))
+        await register_location.finish('添加位置 %s'%(location))
     else:
         await register_location.finish('位置开头不能为数字')
