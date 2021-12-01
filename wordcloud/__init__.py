@@ -17,7 +17,7 @@ import base64
 gpath = '/home/qqbot/plugindata/wordcloud'
 path = gpath +'/data.json'
 font = gpath + '/SourceHanSansHWSC-Regular.otf'
-mask = np.array(Image.open(gpath + '/mask.jpg'))
+mask = np.array(Image.open(gpath + '/mask.png'))
 
 
 data = {} #语料数据
