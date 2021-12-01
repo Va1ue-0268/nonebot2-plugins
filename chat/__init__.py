@@ -89,8 +89,8 @@ async def chat_handle(bot: Bot, event: GroupMessageEvent):
                             while True:
                                 try:
                                     msg = ''.join(random.sample((data[id][i]), 1))
-                                    if msg == last_msg:
-                                        continue
+                                    # if msg == last_msg:
+                                    #     continue
                                     try:
                                         if 'image' in msg:
                                             img_msg = img_path + '/' + re.sub(']', '', msg.split('=')[1])
