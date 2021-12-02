@@ -17,7 +17,6 @@ import base64
 gpath = '/home/qqbot/plugindata/wordcloud'
 path = gpath +'/data.json'
 font = gpath + '/SourceHanSansHWSC-Regular.otf'
-mask = np.array(Image.open(gpath + '/mask.png'))
 
 
 data = {} #语料数据
@@ -62,6 +61,7 @@ async def chat_handle(bot: Bot, event: GroupMessageEvent):
 generator = on_command('生成词云',aliases={"词云"})
 @generator.handle()
 async def generator_handle(bot: Bot, event: Event, state: T_State):
+    mask = np.array(Image.open(gpath + '/mask.png'))
     group_id = event.group_id
     id = union(group_id, 1)
     text = ''
