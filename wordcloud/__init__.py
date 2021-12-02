@@ -64,6 +64,9 @@ async def generator_handle(bot: Bot, event: Event, state: T_State):
     mask = np.array(Image.open(gpath + '/mask.png'))
     group_id = event.group_id
     id = union(group_id, 1)
+
+    """
+    #不用分词的话按照标点符号分割
     text = ''
     for i in data[id]:
         t = data[id][i]
@@ -72,6 +75,10 @@ async def generator_handle(bot: Bot, event: Event, state: T_State):
             t -= 1
     print(text)
     img = WordCloud(background_color='white',mask=mask,font_path=font).generate(text)
+    """
+
+    word = data[id]
+    img = WordCloud(background_color='white',mask=mask,font_path=font).fit_words(word)
     img = WordCloud.to_image(img)
     buffer = BytesIO()
     img.save(buffer, format='PNG')
