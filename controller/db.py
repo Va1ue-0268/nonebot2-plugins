@@ -1,7 +1,7 @@
 import sqlite3
 import os
 import time
-path = path = '/home/qqbot/plugindata/controller'
+path = path = get_driver().config.plugin_data + 'controller'
 db = path + '/data.db'
 
 CONTROLLER_TABLE = 'Controller'

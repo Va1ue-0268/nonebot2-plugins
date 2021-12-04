@@ -10,9 +10,9 @@ CREATE TABLE bilibili(
 );
 '''
 import sqlite3
-import os
 import time
-path = '/home/qqbot/plugindata/bilibili'
+
+path = get_driver().config.plugin_data + 'bilibili'
 db = path + '/data.db'
 
 TABLE = 'bilibili'

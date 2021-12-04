@@ -148,6 +148,8 @@ pic_r18 = on_command('r18')
 async def pic_r18_handle(bot: Bot, event: Event, state: T_State):
     global choosen
     user_id = event.user_id
+    if(user_id not in master):
+        await pic_r18.finish('不可以哦')
     if(setubot.R18 == 0 and choosen == 0):
         setubot.tR18()
         choosen = 1

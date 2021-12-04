@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 from io import BytesIO
 
-from nonebot import on_command, on_message
+from nonebot import on_command, on_message, get_driver
 from nonebot.adapters.cqhttp.bot import Bot
 from nonebot.adapters.cqhttp.event import Event, GroupMessageEvent,MessageEvent, PokeNotifyEvent
 from nonebot.adapters.cqhttp.message import Message, MessageSegment
@@ -17,7 +17,7 @@ from wordcloud import WordCloud
 import jieba
 
 
-gpath = '/home/qqbot/plugindata/wordcloud'
+gpath = get_driver().config.plugin_data + 'wordcloud'
 path = gpath +'/data.json'
 font = gpath + '/SourceHanSansHWSC-Regular.otf'
 punc = string.punctuation + "！？｡＂＃＄％＆＇（）＊＋，－／：；＜＝＞＠［＼］＾＿｀｛｜｝～｟｠｢｣､、〃》「」『』【】〔〕〖〗〘〙〚〛〜〝〞〟〰〾〿–—‘’‛“”„‟…‧﹏."
@@ -52,7 +52,7 @@ def save_json(values:str, id:str):
         tojson = json.dumps(data,sort_keys=True, ensure_ascii=False, indent=4,separators=(',',': '))
         f.write(tojson)
 
-chat = on_message(priority=99)
+chat = on_message(priority=1, block=False)
 @chat.handle()
 async def chat_handle(bot: Bot, event: GroupMessageEvent):
     message = str(event.raw_message)

@@ -4,7 +4,7 @@ import os
 import nonebot
 import json
 import uuid
-from nonebot import on_command
+from nonebot import on_command, get_driver
 from controller.db import add_device, check_if_exist, update_state
 from nonebot.adapters.cqhttp.bot import Bot
 from nonebot.adapters.cqhttp.event import (Event, MessageEvent)

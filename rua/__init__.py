@@ -15,8 +15,8 @@ try:
 except:
     master = []
 
-data_dir = '/home/qqbot/plugindata/rua/data/'
-img_src = '/home/qqbot/plugindata/rua/data/output.gif'
+data_dir = get_driver().config.plugin_data + 'rua/data/'
+img_src = 'rua/data/output.gif'
 img = MessageSegment.image(f'file://{img_src}')
 
 
@@ -30,9 +30,6 @@ async def _t3(bot: Bot, event: PokeNotifyEvent):
     if event.target_id in master:
         creep_id = event.sender_id
     else: creep_id = event.target_id
-
-
-
     url = f'http://q1.qlogo.cn/g?b=qq&nk={creep_id}&s=160'
     resp = requests.get(url)
     resp_cont = resp.content
@@ -74,17 +71,17 @@ async def rua_got(bot: Bot, event: Event, state: T_State):
 
 '''
 三三酱的api平台
-http://ovooa.com
+http://lkaa.top
 '''
     
 pa = on_command('爬')
 @pa.handle()
 async def pa_handle(bot:Bot, event: MessageEvent):
     try:
-        qq = re.search(r"[\[CQ:at,qq=]([0-9].{0,20})[\]]", str(event.message)).group(1)
+        qq = int(re.search(r"[\[CQ:at,qq=]([0-9].{0,20})[\]]", str(event.message)).group(1))
         if qq in master:
-            qq = event.sender_id
-        await bot.send(event, message = Message(f"[CQ:image,file=http://ovooa.com/API/pa/api.php?QQ={qq}]"))
+            qq = event.user_id
+        await bot.send(event, message = Message(f"[CQ:image,file=http://lkaa.top/API/pa/api.php?QQ={qq}]"))
     except:
         pass
 
@@ -92,10 +89,10 @@ si = on_command('撕了')
 @si.handle()
 async def si_handle(bot:Bot, event: MessageEvent):
     try:
-        qq = re.search(r"[\[CQ:at,qq=]([0-9].{0,20})[\]]", str(event.message)).group(1)
+        qq = int(re.search(r"[\[CQ:at,qq=]([0-9].{0,20})[\]]", str(event.message)).group(1))
         if qq in master:
-            qq = event.sender_id
-        await bot.send(event, message = Message(f"[CQ:image,file=http://ovooa.com/API/si/?QQ={qq}]"))
+            qq = event.user_id
+        await bot.send(event, message = Message(f"[CQ:image,file=http://lkaa.top/API/si/?QQ={qq}]"))
     except:
         pass
 
@@ -103,10 +100,10 @@ chi = on_command('吃了')
 @chi.handle()
 async def chi_handle(bot:Bot, event: MessageEvent):
     try:
-        qq = re.search(r"[\[CQ:at,qq=]([0-9].{0,20})[\]]", str(event.message)).group(1)
+        qq = int(re.search(r"[\[CQ:at,qq=]([0-9].{0,20})[\]]", str(event.message)).group(1))
         if qq in master:
-            qq = event.sender_id
-        await bot.send(event, message = Message(f"[CQ:image,file=http://ovooa.com/API/chi/?QQ={qq}]"))
+            qq = event.user_id
+        await bot.send(event, message = Message(f"[CQ:image,file=http://lkaa.top/API/chi/?QQ={qq}]"))
     except:
         pass
 
@@ -114,10 +111,10 @@ diu = on_command('去吧')
 @diu.handle()
 async def diu_handle(bot:Bot, event: MessageEvent):
     try:
-        qq = re.search(r"[\[CQ:at,qq=]([0-9].{0,20})[\]]", str(event.message)).group(1)
+        qq = int(re.search(r"[\[CQ:at,qq=]([0-9].{0,20})[\]]", str(event.message)).group(1))
         if qq in master:
-            qq = event.sender_id
-        await bot.send(event, message = Message(f"[CQ:image,file=http://ovooa.com/API/diu/api.php?QQ={qq}]"))
+            qq = event.user_id
+        await bot.send(event, message = Message(f"[CQ:image,file=http://lkaa.top/API/diu/api.php?QQ={qq}]"))
     except:
         pass
 
@@ -125,7 +122,7 @@ jupai = on_command('举牌')
 @jupai.handle()
 async def jupai_handle(bot:Bot, event: MessageEvent):
     try:
-        await bot.send(event, message = Message(f"[CQ:image,file=http://ovooa.com/API/pai/?msg={event.message}]"))
+        await bot.send(event, message = Message(f"[CQ:image,file=http://lkaa.top/API/pai/?msg={event.message}]"))
     except:
         pass
 

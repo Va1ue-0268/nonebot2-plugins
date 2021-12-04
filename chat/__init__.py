@@ -1,12 +1,9 @@
 import json
-import os
 import random
-import time
-import sys
 import re
 from . import aiopic
 
-from nonebot import on_command, on_message
+from nonebot import on_command, on_message, get_driver
 from nonebot.adapters.cqhttp.bot import Bot
 from nonebot.adapters.cqhttp.event import Event, GroupMessageEvent,MessageEvent, PokeNotifyEvent
 from nonebot.adapters.cqhttp.message import Message, MessageSegment
@@ -23,7 +20,7 @@ P = 1
 focus_id = [] #特别对象 无视概率直接回复 user_id:int 
 filter_list = []
 
-gpath = '/home/qqbot/plugindata/chat'
+gpath = get_driver().config.plugin_data + 'chat'
 path = gpath +'/data.json'
 img_path = gpath + '/img'
 
@@ -53,60 +50,56 @@ def save_json(keys:str, values:str, id:str):
         tojson = json.dumps(data,sort_keys=True, ensure_ascii=False, indent=4,separators=(',',': '))
         f.write(tojson)
 
-chat = on_message(priority=99)
+chat = on_message(priority=99, block=False)
 @chat.handle()
 async def chat_handle(bot: Bot, event: GroupMessageEvent):
     message = str(event.raw_message)
     group_id = event.group_id
     user_id = event.user_id
-    
 
-    if 'CQ:image' in message:
-        img_name = re.sub(']', '', message.split('=')[1])
-        img_url = await bot.get_image(file=img_name)
-        img_url = img_url['url']
-        img_name = re.sub('image', 'png', img_name)
-        img_name = img_path + '/' + img_name
-        result = await aiopic.get_pic(img_url, img_name)
-        print(result)
     global ptalk
     global last_msg
     ptalk.setdefault(group_id,P)
     trigger.setdefault(group_id,' ')
    
-    for id in [1, group_id]:
-        id = union(id, 1)
-        for i in data[id]:
-            if i in message :
-                if len(i) > 3 or i == message:
-                    # 重复回复的
-                    if trigger[group_id] != i : 
-                        if random.random() < ptalk[group_id] or user_id in focus_id:
-                            if repeat_stop:
-                                trigger[group_id] = i
-                            print('ok')
-                            #若消息不存在则删除
-                            while True:
-                                try:
-                                    msg = ''.join(random.sample((data[id][i]), 1))
-                                    # if msg == last_msg:
-                                    #     continue
+    try:
+        for id in [1, group_id]:
+            id = union(id, 1)
+            for i in data[id]:
+                if i in message :
+                    if len(i) > 3 or i == message:
+                        # 重复回复的
+                        if trigger[group_id] != i : 
+                            if random.random() < ptalk[group_id] or user_id in focus_id:
+                                if repeat_stop:
+                                    trigger[group_id] = i
+                                print('ok')
+                                #若消息不存在则删除
+                                while True:
                                     try:
-                                        if 'image' in msg:
-                                            img_msg = img_path + '/' + re.sub(']', '', msg.split('=')[1])
-                                            img_msg = re.sub('image', 'png', img_msg)
-                                            img_msg = MessageSegment.image(f'file://{img_msg}')
-                                            await bot.send(event,message=img_msg)
-                                        else:
+                                        msg = ''.join(random.sample((data[id][i]), 1))
+                                        # if msg == last_msg:
+                                        #     continue
+                                        try:
+                                            if 'image' in msg:
+                                                img_msg = img_path + '/' + re.sub(']', '', msg.split('=')[1])
+                                                img_msg = re.sub('image', 'png', img_msg)
+                                                img_msg = MessageSegment.image(f'file://{img_msg}')
+                                                await bot.send(event,message=img_msg)
+                                            else:
+                                                await bot.send(event,message=Message(msg))
+                                        except:
                                             await bot.send(event,message=Message(msg))
+                                        last_msg = msg
+                                        break
                                     except:
-                                        await bot.send(event,message=Message(msg))
-                                    last_msg = msg
-                                    break
-                                except:
-                                    print("delete ", msg)
-                                    data[id][i].remove(msg)
-                            return
+                                        print("delete ", msg)
+                                        data[id][i].remove(msg)
+                                return
+    except:
+        id = union(group_id, 1)
+        if id not in data:
+            data[id] = {}
 
 
 

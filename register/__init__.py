@@ -3,7 +3,7 @@ import json
 import os
 import nonebot
 import json
-from nonebot import on_command
+from nonebot import on_command, get_driver
 from nonebot.adapters.cqhttp.bot import Bot
 from nonebot.adapters.cqhttp.event import (Event, MessageEvent)
 from nonebot.adapters.cqhttp.message import Message
@@ -16,7 +16,7 @@ location = ''
 default_location = ''
 
 #以后用数据库，现在先用着
-user_json_path = '/home/qqbot/plugindata/light/user_data.json'
+user_json_path = get_driver().config.plugin_data + 'light/user_data.json'
 data_path = '/home/download/esp/'
 
 #默认配置
