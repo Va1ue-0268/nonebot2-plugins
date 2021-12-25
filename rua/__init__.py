@@ -16,7 +16,7 @@ except:
     master = []
 
 data_dir = get_driver().config.plugin_data + 'rua/data/'
-img_src = 'rua/data/output.gif'
+img_src = get_driver().config.plugin_data + 'rua/data/output.gif'
 img = MessageSegment.image(f'file://{img_src}')
 
 

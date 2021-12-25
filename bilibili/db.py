@@ -11,7 +11,7 @@ CREATE TABLE bilibili(
 '''
 import sqlite3
 import time
-
+from nonebot import get_driver
 path = get_driver().config.plugin_data + 'bilibili'
 db = path + '/data.db'
 

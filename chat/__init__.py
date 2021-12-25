@@ -1,6 +1,7 @@
 import json
 import random
 import re
+import time
 from . import aiopic
 
 from nonebot import on_command, on_message, get_driver
@@ -50,12 +51,28 @@ def save_json(keys:str, values:str, id:str):
         tojson = json.dumps(data,sort_keys=True, ensure_ascii=False, indent=4,separators=(',',': '))
         f.write(tojson)
 
+async def get_pic(message):
+    img_url = re.sub(']', '', message.split('=')[3])
+    img_url = re.sub('\?term', '', img_url)
+    img_name = re.sub('image', 'png', message.split('=')[1])
+    img_name = re.sub(',subType', '', img_name)
+    img_name = img_path + '/' + img_name
+    print(img_name + ' ' + img_url)
+    result = await aiopic.get_pic(img_url, img_name)
+    return(result)
+
 chat = on_message(priority=99, block=False)
 @chat.handle()
 async def chat_handle(bot: Bot, event: GroupMessageEvent):
     message = str(event.raw_message)
     group_id = event.group_id
     user_id = event.user_id
+
+    if 'CQ:image' in message:
+        raw = str(event.message)
+        result = await get_pic(raw)
+        print(result)
+
 
     global ptalk
     global last_msg
@@ -78,8 +95,8 @@ async def chat_handle(bot: Bot, event: GroupMessageEvent):
                                 while True:
                                     try:
                                         msg = ''.join(random.sample((data[id][i]), 1))
-                                        # if msg == last_msg:
-                                        #     continue
+                                        if msg == last_msg:
+                                            continue
                                         try:
                                             if 'image' in msg:
                                                 img_msg = img_path + '/' + re.sub(']', '', msg.split('=')[1])
@@ -162,18 +179,11 @@ async def set_got2(bot: Bot, event: Event, state: T_State):
         if filter(state["key"]):
             await set_respond.finish(Message("[CQ:image,file=cab2ae806af6b0a7b61fdd8534b50093.image]"))
         else:
-            try:
-                #录入库
-                if 'CQ:image' in state["value"]:
-                    img_name = re.sub(']', '', state["value"].split('=')[1])
-                    img_url = await bot.get_image(file=img_name)
-                    img_url = img_url['url']
-                    img_name = re.sub('image', 'png', img_name)
-                    img_name = img_path + '/' + img_name
-                    result = await aiopic.get_pic(img_url, img_name)
-                    print(result)
-                save_json(state["key"], state["value"], union(state['gid'] , 1))
-                await set_respond.finish(message='ok~')
-            except:
-                print('over')
+            #录入库
+            if 'CQ:image' in str(event.message):
+                raw = str(event.message)
+                result = await get_pic(raw)
+                print(result)
+            save_json(state["key"], state["value"], union(state['gid'] , 1))
+            await set_respond.finish(message='ok~')
 
