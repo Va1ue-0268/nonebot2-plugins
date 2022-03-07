@@ -2,9 +2,9 @@ from posixpath import expanduser
 import threading
 import re
 from nonebot import on_command, get_driver
-from nonebot.adapters.cqhttp.bot import Bot
-from nonebot.adapters.cqhttp.event import Event
-from nonebot.adapters.cqhttp.message import Message, MessageSegment
+from nonebot.adapters.onebot.v11.bot import Bot
+from nonebot.adapters.onebot.v11.event import Event
+from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 
 from nonebot.typing import T_State
 import os
@@ -52,6 +52,7 @@ async def setu_handle(bot: Bot, event: Event, state: T_State):
     user_id = event.user_id
     #获取关键词，数量 并处理
     comman = str(event.message).split(' ')
+    del comman[0]
     keyword = ''
     num = 1
     print(comman[0])

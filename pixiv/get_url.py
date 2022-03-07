@@ -4,7 +4,7 @@ import random
 from pixivpy_async import AppPixivAPI
 import re
 
-_TOKEN = "o-HYGiZqb_azny7RSwX7y2uy0Z0JVOu6WHUD9He9Vgk"
+_TOKEN = "JQ5glRsk9hD8XwPsVuHOgcJ-NcljnxUEf-9faM23Q6Q"
 
 class pixiv:
     def __init__(self):

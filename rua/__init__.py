@@ -1,7 +1,7 @@
 from nonebot import on_command, get_driver, on_notice
-from nonebot.adapters.cqhttp.bot import Bot
-from nonebot.adapters.cqhttp.event import MessageEvent, PokeNotifyEvent, Event
-from nonebot.adapters.cqhttp.message import Message, MessageSegment
+from nonebot.adapters.onebot.v11.bot import Bot
+from nonebot.adapters.onebot.v11.event import MessageEvent, PokeNotifyEvent, Event
+from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 from nonebot.typing import T_State
 from .data_source import generate_gif
 import re

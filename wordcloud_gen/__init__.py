@@ -6,9 +6,9 @@ from PIL import Image
 from io import BytesIO
 
 from nonebot import on_command, on_message, get_driver
-from nonebot.adapters.cqhttp.bot import Bot
-from nonebot.adapters.cqhttp.event import Event, GroupMessageEvent,MessageEvent, PokeNotifyEvent
-from nonebot.adapters.cqhttp.message import Message, MessageSegment
+from nonebot.adapters.onebot.v11.bot import Bot
+from nonebot.adapters.onebot.v11.event import Event, GroupMessageEvent,MessageEvent, PokeNotifyEvent
+from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 from nonebot.rule import to_me
 from nonebot.typing import T_State
 

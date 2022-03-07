@@ -4,14 +4,14 @@ import os
 import nonebot
 import json
 from nonebot import on_command, get_driver, get_bots, require
-from nonebot.adapters.cqhttp.bot import Bot
-from nonebot.adapters.cqhttp.event import (Event, MessageEvent)
-from nonebot.adapters.cqhttp.message import Message
+from nonebot.adapters.onebot.v11.bot import Bot
+from nonebot.adapters.onebot.v11.event import (Event, MessageEvent)
+from nonebot.adapters.onebot.v11.message import Message
 from nonebot.typing import T_State
 
 #以后用数据库，现在先用着
-user_data_path = '/home/pi/flask_light/user_data.json'
-check_data_path = '/home/pi/flask_light/data.json'
+user_data_path = get_driver().config.plugin_data + 'flask_light/user_data.json'
+check_data_path = get_driver().config.plugin_data + 'flask_light/data.json'
 
 #初始化次数
 t = 0
@@ -23,7 +23,7 @@ place = ''
 check_data = {}
 
 scheduler = require('nonebot_plugin_apscheduler').scheduler
-group = []
+group = [1048058406]
 
 with open(check_data_path) as f:
     check_data = json.load(f)
@@ -101,7 +101,7 @@ def get_user_color(user_id, location):
     return data[user_id][location]
 
 #检查是否在线
-@scheduler.scheduled_job('cron', minute='*/1', id='online_check')
+@scheduler.scheduled_job('cron', minute='*/1', id='online_check', misfire_grace_time=10, coalesce=True)
 async def online_check():
     data = get_check_data()
     for bot in get_bots().values():
@@ -124,12 +124,13 @@ set_light_on_cn = on_command('开灯', aliases=None)
 async def set_light_on_cn_handle(bot: Bot, event: Event, state: T_State):
     global user_id, place
     command = str(event.get_message()).split()
+    del command[0]
     user_id = str(event.user_id)
     user_data = get_user_data()
     if user_id not in user_data:
         await set_light_on_cn.finish('你还没有注册哦')
     default_location = user_data[user_id]['default']
-    if command:
+    if len(command) > 0:
         place = command[0]
         if place not in user_data[user_id]['location']:
             await set_light_on_cn.finish('没有这个位置哦')
@@ -150,12 +151,13 @@ set_light_off_cn = on_command('关灯', aliases=None)
 async def set_light_off_cn_handle(bot: Bot, event: Event, state: T_State):
     global user_id, place
     command = str(event.get_message()).split()
+    del command[0]
     user_id = str(event.user_id)
     user_data = get_user_data()
     if user_id not in user_data:
         await set_light_off_cn.finish('你还没有注册哦')
     default_location = user_data[user_id]['default']
-    if command:
+    if len(command) > 0:
         place = command[0]
         if place not in user_data[user_id]['location']:
             await set_light_off_cn.finish('没有这个位置哦')
@@ -171,12 +173,13 @@ set_light_color_cn = on_command('颜色', aliases=None)
 async def set_light_color_cn_handle(bot: Bot, event: Event, state: T_State):
     global user_id, place
     command = str(event.get_message()).split()
+    del command[0]
     user_id = str(event.user_id)
     user_data = get_user_data()
     if user_id not in user_data:
         await set_light_color_cn.finish('你还没有注册哦')
     default_location = user_data[user_id]['default']
-    if command:
+    if len(command) > 0:
         if command[0][0].isdigit() == 1:
             place = default_location
             R = command[0]

@@ -5,9 +5,9 @@ import time
 from . import aiopic
 
 from nonebot import on_command, on_message, get_driver
-from nonebot.adapters.cqhttp.bot import Bot
-from nonebot.adapters.cqhttp.event import Event, GroupMessageEvent,MessageEvent, PokeNotifyEvent
-from nonebot.adapters.cqhttp.message import Message, MessageSegment
+from nonebot.adapters.onebot.v11.bot import Bot
+from nonebot.adapters.onebot.v11.event import Event, GroupMessageEvent,MessageEvent, PokeNotifyEvent
+from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 from nonebot.rule import to_me
 from nonebot.typing import T_State
 
@@ -28,13 +28,11 @@ img_path = gpath + '/img'
 def union(gid, uid):
     return str((gid << 32) | uid)
 # 读取数据文件
-try:
-    with open(path) as f:
-        data = json.load(f)
-    with open(gpath +'/filter.json') as f:
-        filter_list = json.load(f)['f']
-except:
-    pass
+
+with open(path) as f:
+    data = json.load(f)
+with open(gpath +'/filter.json') as f:
+    filter_list = json.load(f)
 
 def save_json(keys:str, values:str, id:str):
     '''
@@ -155,10 +153,11 @@ async def set_handle(bot: Bot, event: Event, state: T_State):
         state['gid'] = event.group_id
         state['uid'] = event.user_id
     comman = str(event.get_message()).split()
-    if comman:
-        state["key"] = comman[0]
-        if len(comman) >1:
-            state["value"] = comman[1]
+    print(comman)
+    if len(comman) > 1:
+        state["key"] = comman[1]
+        if len(comman) > 2:
+            state["value"] = comman[2]
 
 @set_respond.got('key', prompt="设置什么～")
 async def set_got(bot: Bot, event: Event, state: T_State):
@@ -184,6 +183,6 @@ async def set_got2(bot: Bot, event: Event, state: T_State):
                 raw = str(event.message)
                 result = await get_pic(raw)
                 print(result)
-            save_json(state["key"], state["value"], union(state['gid'] , 1))
+            save_json(str(state["key"]), str(state["value"]), union(int(state['gid']), 1))
             await set_respond.finish(message='ok~')
 

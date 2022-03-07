@@ -1,24 +1,15 @@
-'''
-CREATE TABLE bilibili(  
-    gid INTEGER not null,
-    mid INTEGER not null,
-    name char(50),
-    live INTEGER,
-    dynamic INTEGER,
-    latest_dynamic INTEGER,
-    primary key(gid, mid)
-);
-'''
 import sqlite3
+import os
 import time
 from nonebot import get_driver
+
 path = get_driver().config.plugin_data + 'bilibili'
-db = path + '/data.db'
+DB = path + '/data.db'
 
 TABLE = 'bilibili'
 
 def execute(sql:str):
-    conn = sqlite3.connect(db)
+    conn = sqlite3.connect(DB)
     c = conn.cursor()
     res = c.execute(sql)
     data = []
@@ -33,10 +24,10 @@ def execute(sql:str):
 '''
 INSERT
 '''
-def add_focus(gid:int, mid:int,name:str, live=0, live_state=0, dynamic=0):
+def add_focus(gid:int, mid:int,name:str, live=0, dynamic=0):
 
-   sql = f'''INSERT INTO {TABLE} (gid, mid, name, live, live_state, dynamic, latest_dynamic) 
-   values ("{gid}", {mid}, "{name}", "{live}", "{live_state}", "{dynamic}", {time.time()});'''
+   sql = f'''INSERT INTO {TABLE} (gid, mid, name, live, is_live,dynamic, latest_dynamic) 
+   values ("{gid}", {mid}, "{name}", "{live}", "0", "{dynamic}", {time.time()});'''
    execute(sql)
 
 
@@ -49,8 +40,14 @@ BASE_SELECT_SQL = f"SELECT * FROM {TABLE}"
 def select_all():
     return execute(BASE_SELECT_SQL)
 
-def select_one(gid, mid):
-    return execute(BASE_SELECT_SQL + f' where mid = {mid} and gid = {gid}')
+def select_by_field(gid, key, field = 'mid'):
+    res = (execute(BASE_SELECT_SQL + f' where {field} = "{key}" and gid = {gid}'))
+    if res:
+        return res[0] if len(res) == 1 else res
+
+    return None
+
+
 
 def select_live():
     return execute(BASE_SELECT_SQL + " where live = 1")
@@ -59,17 +56,9 @@ def select_dynamic():
     return execute(BASE_SELECT_SQL + " where dynamic = 1")
 
 
-'''
-UPDATE
-'''
 def update(gid, mid ,field: str, value):
-    """
-      :更新up的关注
-
-      field: 字段
-    """
     execute(f'UPDATE {TABLE} set {field} = "{value}" WHERE mid = {mid} and gid = {gid}')
 
 
-def delete_focus(gid, mid):
-    execute(f'DELETE FROM {TABLE} WHERE mid = {mid} and gid = {gid}')
+def delete_by_field(gid, mid, field = 'mid'):
+    execute(f'DELETE FROM {TABLE} WHERE {field} = {mid} and gid = {gid}')
